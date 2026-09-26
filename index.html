@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Web Me Lead Finder — real-world entity research and lead intelligence.">
+  <title>Web Me — Lead Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="earthBackground" class="earth-background" aria-hidden="true">
+    <video id="earthVideo" muted loop autoplay playsinline src="assets/earth-3d.mp4"></video>
+    <div class="earth-overlay"></div>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">W</div>
+        <div><strong>WEB ME</strong><span>LEAD FINDER</span></div>
+      </div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="leadFinderView">⌕ <span>Lead Finder</span></button>
+        <button class="nav-item" data-view="researchEngineView">◌ <span>Research Engine</span></button>
+        <button class="nav-item" data-view="savedLeadsView">♡ <span>Saved Leads</span></button>
+        <button class="nav-item" data-view="websiteOpportunitiesView">◇ <span>Website Opportunities</span></button>
+        <button class="nav-item" data-view="pricingCalculatorView">₦ <span>Pricing Calculator</span></button>
+        <button class="nav-item" data-view="currencyConverterView">⇄ <span>Currency Converter</span></button>
+        <button class="nav-item" data-view="exportsView">↓ <span>Exports</span></button>
+        <button class="nav-item" data-view="settingsView">⚙ <span>Settings</span></button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="status-dot"></div>
+        <span id="backendStatus">Checking backend…</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Open navigation">☰</button>
+        <div>
+          <div class="eyebrow">REAL-WORLD ENTITY RESEARCH</div>
+          <h1 id="pageTitle">Lead Finder</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☾</button>
+          <button class="primary-btn" id="openAi">Ask Web Me</button>
+        </div>
+      </header>
+
+      <section class="view active" id="leadFinderView">
+        <div class="hero-copy">
+          <h2>Find real businesses.<br><span>Find real opportunities.</span></h2>
+          <p>Discover public business information worldwide, verify online presence, research entities and build evidence-based website opportunities.</p>
+        </div>
+
+        <div class="search-card">
+          <div class="field country-field">
+            <label>Country</label>
+            <button id="countryButton" class="select-btn">Select a country <span>⌄</span></button>
+            <div class="country-menu hidden" id="countryMenu">
+              <input id="countrySearch" placeholder="Search countries…" autocomplete="off">
+              <div id="countryOptions" class="country-options"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>State / Region</label>
+            <input id="regionInput" placeholder="e.g. Lagos">
+          </div>
+          <div class="field">
+            <label>City / Area</label>
+            <input id="areaInput" placeholder="e.g. Ikorodu">
+          </div>
+          <div class="field">
+            <label>Additional Query</label>
+            <input id="keywordInput" placeholder="e.g. laundry, restaurant, school">
+          </div>
+          <div class="field radius-field">
+            <label>Radius</label>
+            <select id="radiusInput">
+              <option value="">Entire area</option>
+              <option value="1km">1 km</option><option value="5km">5 km</option>
+              <option value="10km">10 km</option><option value="25km">25 km</option>
+              <option value="50km">50 km</option><option value="100km">100 km</option>
+            </select>
+          </div>
+          <button id="searchButton" class="search-btn">Search <span>→</span></button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat"><span>Businesses Found</span><strong id="businessesFound">0</strong></div>
+          <div class="stat"><span>No Website Found</span><strong id="noWebsiteFound">0</strong></div>
+          <div class="stat"><span>Website Found</span><strong id="websiteFound">0</strong></div>
+          <div class="stat"><span>Research Completed</span><strong id="researchCompleted">0</strong></div>
+        </div>
+
+        <div class="workspace-grid">
+          <section class="panel results-panel">
+            <div class="panel-head">
+              <div><h3>Search results</h3><span id="activeFilters">No active search</span></div>
+              <button class="ghost-btn" id="filterToggle">Filters</button>
+            </div>
+            <div id="loadingState" class="empty hidden"><div class="spinner"></div><h3>Searching real sources…</h3><p>Results will appear when the configured provider returns verified entities.</p></div>
+            <div id="emptyState" class="empty"><div class="empty-icon">⌕</div><h3>Search for a real-world entity to begin.</h3><p>No demo businesses are loaded. Live results require a configured search provider.</p></div>
+            <div class="table-wrap">
+              <table id="resultsTable">
+                <thead><tr><th>Entity</th><th>Type</th><th>Location</th><th>Website</th><th>Status</th><th>Rating</th><th>Reviews</th><th>Opportunity</th><th>Actions</th></tr></thead>
+                <tbody id="resultsTableBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination" class="pagination"></div>
+          </section>
+
+          <section class="panel map-panel">
+            <div class="panel-head"><div><h3>Live map</h3><span>Verified coordinates only</span></div></div>
+            <div id="mapContainer" class="map-placeholder">
+              <div class="map-grid"></div>
+              <div><div class="map-icon">◎</div><strong>Map unavailable</strong><p>Configure a Google Maps browser key to display live map data.</p></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="researchEngineView">
+        <div class="page-intro"><h2>Research Engine</h2><p>Run truthful, source-aware research at the depth you choose.</p></div>
+        <div class="panel">
+          <div class="empty"><div class="empty-icon">◌</div><h3>No research queue yet.</h3><p>Select a real entity from Lead Finder and start research.</p></div>
+        </div>
+      </section>
+
+      <section class="view" id="savedLeadsView">
+        <div class="page-intro"><h2>Saved Leads</h2><p>Your locally saved research targets and workflow pipeline.</p></div>
+        <div class="panel"><div id="savedList" class="lead-list"></div><div id="savedEmpty" class="empty"><div class="empty-icon">♡</div><h3>No saved leads.</h3><p>Save verified entities from Lead Finder to see them here.</p></div></div>
+      </section>
+
+      <section class="view" id="websiteOpportunitiesView">
+        <div class="page-intro"><h2>Website Opportunities</h2><p>Evidence-based opportunities derived from actual research signals. No ranking.</p></div>
+        <div class="opportunity-grid">
+          <div class="panel"><h3>Potential Website Opportunities</h3><strong id="opportunityCount">0</strong><p>Calculated from saved/current research only.</p></div>
+          <div class="panel"><h3>Weak Website Opportunities</h3><strong>0</strong><p>No verified records yet.</p></div>
+          <div class="panel"><h3>Social-Only Opportunities</h3><strong>0</strong><p>No verified records yet.</p></div>
+        </div>
+      </section>
+
+      <section class="view" id="pricingCalculatorView">
+        <div class="page-intro"><h2>Pricing Calculator</h2><p>Configurable ranges, not a universal fixed website price.</p></div>
+        <div class="panel form-panel">
+          <div class="form-grid">
+            <div class="field"><label>Website Type</label><select id="priceType"><option>Business website</option><option>Portfolio</option><option>E-commerce</option><option>Booking website</option><option>Corporate website</option></select></div>
+            <div class="field"><label>Pages</label><input id="pricePages" type="number" min="1" value="5"></div>
+            <div class="field"><label>Design</label><select id="priceDesign"><option>Standard</option><option>Custom</option><option>Premium</option></select></div>
+            <div class="check-grid">
+              <label><input type="checkbox" class="price-feature" value="booking"> Booking</label>
+              <label><input type="checkbox" class="price-feature" value="payment"> Payment</label>
+              <label><input type="checkbox" class="price-feature" value="cms"> CMS</label>
+              <label><input type="checkbox" class="price-feature" value="ecommerce"> E-commerce</label>
+              <label><input type="checkbox" class="price-feature" value="dashboard"> Dashboard</label>
+              <label><input type="checkbox" class="price-feature" value="accounts"> User accounts</label>
+              <label><input type="checkbox" class="price-feature" value="api"> API</label>
+              <label><input type="checkbox" class="price-feature" value="database"> Database</label>
+              <label><input type="checkbox" class="price-feature" value="ai"> AI</label>
+              <label><input type="checkbox" class="price-feature" value="seo"> SEO</label>
+              <label><input type="checkbox" class="price-feature" value="maintenance"> Maintenance</label>
+            </div>
+          </div>
+          <button id="calculatePrice" class="primary-btn">Calculate range</button>
+          <div id="priceResult" class="result-box hidden"></div>
+        </div>
+      </section>
+
+      <section class="view" id="currencyConverterView">
+        <div class="page-intro"><h2>Currency Converter</h2><p>Live exchange rates only. No hardcoded rates.</p></div>
+        <div class="panel form-panel">
+          <div class="form-grid three">
+            <div class="field"><label>Amount</label><input id="currencyAmount" type="number" value="100"></div>
+            <div class="field"><label>From</label><select id="currencyFrom"></select></div>
+            <div class="field"><label>To</label><select id="currencyTo"></select></div>
+          </div>
+          <button id="convertCurrency" class="primary-btn">Convert</button>
+          <div id="currencyResult" class="result-box hidden"></div>
+        </div>
+      </section>
+
+      <section class="view" id="exportsView">
+        <div class="page-intro"><h2>Exports</h2><p>Export actual records only.</p></div>
+        <div class="panel export-panel">
+          <label>Dataset</label><select id="exportDataset"><option value="current">Current results</option><option value="saved">Saved leads</option></select>
+          <div class="export-actions"><button class="primary-btn" data-export="csv">Export CSV</button><button class="ghost-btn" data-export="json">Export JSON</button></div>
+        </div>
+      </section>
+
+      <section class="view" id="settingsView">
+        <div class="page-intro"><h2>Settings</h2><p>Preferences are stored locally in this first version.</p></div>
+        <div class="panel settings-list">
+          <label>Theme <select id="themeSetting"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+          <label>Default currency <select id="defaultCurrency"></select></label>
+          <label>Default search radius <select id="defaultRadius"><option value="">Entire area</option><option>1km</option><option>5km</option><option>10km</option><option>25km</option><option>50km</option><option>100km</option></select></label>
+          <label>Research depth <select id="researchDepth"><option>Quick Research</option><option>Standard Research</option><option>Deep Research</option></select></label>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside id="detailsPanel" class="drawer" aria-hidden="true">
+    <div class="drawer-head"><div><span class="eyebrow">ENTITY DOSSIER</span><h2 id="detailsBusinessName">Entity</h2></div><button class="icon-btn" id="closeDetails">×</button></div>
+    <div class="drawer-body">
+      <div class="detail-status"><span id="detailsBusinessType">UNKNOWN</span><span id="detailsConfidence">UNVERIFIED</span></div>
+      <div class="detail-section"><h4>Identity</h4><p id="detailType">Unknown</p><p id="detailAddress">Address unavailable</p></div>
+      <div class="detail-section"><h4>Contact</h4><p id="detailPhone">Phone unavailable</p><p id="detailEmail">Email unavailable</p><p id="detailWhatsapp">WhatsApp unavailable</p></div>
+      <div class="detail-section"><h4>Website</h4><div id="detailWebsiteStatusLarge" class="status-pill">Website Unknown</div><p id="websiteEvidenceText">No verified website evidence available.</p></div>
+      <div class="detail-section"><h4>Social Media</h4><div class="social-statuses"><span id="instagramStatus">Instagram: UNKNOWN</span><span id="facebookStatus">Facebook: UNKNOWN</span><span id="tiktokStatus">TikTok: UNKNOWN</span><span id="linkedinStatus">LinkedIn: UNKNOWN</span><span id="youtubeStatus">YouTube: UNKNOWN</span></div></div>
+      <div class="detail-section"><h4>Research</h4><p id="detailResearchStatus">Not researched</p><p id="detailDescription">No research summary available.</p></div>
+      <div class="detail-section"><h4>Opportunity</h4><p id="detailOpportunity">No opportunity analysis available.</p></div>
+      <div class="detail-actions"><button class="primary-btn" id="websiteBriefButton">Generate Website Brief</button><button class="ghost-btn" id="saveLeadButton">Save Lead</button><button class="ghost-btn" id="askWebMeButton">Send to Web Me</button></div>
+    </div>
+  </aside>
+
+  <aside id="aiPanel" class="drawer ai-drawer" aria-hidden="true">
+    <div class="drawer-head"><div><span class="eyebrow">AI ASSISTANT</span><h2>WEB ME</h2></div><button class="icon-btn" id="closeAi">×</button></div>
+    <div class="ai-context" id="aiContextName">No entity selected</div>
+    <div class="ai-messages" id="aiMessages"><div class="ai-message">I’m Web Me. Ask me about a researched entity, its public presence, research gaps, or a possible website plan.</div></div>
+    <form class="ai-input-row" id="aiForm"><input id="aiInput" placeholder="Ask Web Me…" autocomplete="off"><button class="primary-btn" id="aiSend">Send</button></form>
+  </aside>
+
+  <div id="toastRoot" class="toast-root"></div>
+  <script src="app.js"></script>
+</body>
+</html>
