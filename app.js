@@ -4,10 +4,28 @@ const state = {
 };
 
 const $ = (id) => document.getElementById(id);
-const api = async (url, options={}) => {
-  const response = await fetch(url, {headers: {"Content-Type":"application/json"}, ...options});
-  const data = await response.json().catch(()=>({success:false,error:{message:"Invalid server response."}}));
-  if (!response.ok || data.success === false) throw new Error(data.error?.message || "Request failed.");
+const API_BASE_URL = "https://webme-lead-finder.onrender.com";
+
+const api = async (url, options = {}) => {
+  const response = await fetch(`${API_BASE_URL}${url}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
+    ...options
+  });
+
+  const data = await response.json().catch(() => ({
+    success: false,
+    error: {
+      message: "Invalid server response."
+    }
+  }));
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.error?.message || "Request failed.");
+  }
+
   return data.data;
 };
 
